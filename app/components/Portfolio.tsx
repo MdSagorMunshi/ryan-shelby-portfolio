@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Moon, Sun, Mail, Github, Linkedin, Send, Code, Server, Cpu } from 'lucide-react'
+import { Moon, Sun, Mail, Github, Linkedin, Send, Code, Server, Cpu, MessageSquare, Gitlab, BookOpen, ChevronDown, Paintbrush, GitBranch, Brain, Link, Wifi, Smartphone, BarChart, Users } from 'lucide-react'
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Textarea } from "../components/ui/textarea"
@@ -12,6 +12,24 @@ import TurnstileWidget from './TurnstileWidget'
 import Loading from './Loading'
 import { sendEmail } from '../actions/sendEmail'
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card"
+import { Progress } from "../components/ui/progress"
+
+// Simulating a real-time visitor counter with WebSocket
+const useVisitorCounter = () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    // Simulating WebSocket connection
+    const interval = setInterval(() => {
+      setCount(prevCount => prevCount + Math.floor(Math.random() * 3));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return count;
+};
 
 export default function Portfolio() {
   const { theme, setTheme } = useTheme()
@@ -20,6 +38,7 @@ export default function Portfolio() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  const visitorCount = useVisitorCounter()
 
   useEffect(() => setMounted(true), [])
 
@@ -46,139 +65,28 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <nav className="p-4 flex justify-between items-center">
+      <nav className="p-4 flex justify-between items-center sticky top-0 bg-background z-10">
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-2xl font-bold"
+          className="text-2xl font-bold cursor-pointer"
+          onClick={() => window.location.reload()}
         >
           Ryan Shelby
         </motion.h1>
         <div className="flex items-center space-x-4">
+          <VisitorCounter count={visitorCount} />
           <Switch checked={theme === 'dark'} onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
           {theme === 'light' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </div>
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold mb-4">Web Developer | Hacker | Mechanical Engineer</h2>
-          <p className="text-xl text-muted-foreground">Bridging the gap between software and hardware</p>
-        </motion.section>
-
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-        >
-          {[
-            { title: 'Web Development', icon: Code, description: 'Building responsive and dynamic web applications using modern frameworks and technologies.' },
-            { title: 'Cybersecurity', icon: Server, description: 'Implementing robust security measures and conducting penetration testing to protect digital assets.' },
-            { title: 'Mechanical Engineering', icon: Cpu, description: 'Designing and optimizing mechanical systems with a focus on efficiency and innovation.' }
-          ].map(({ title, icon: Icon, description }, index) => (
-            <motion.div 
-              key={title}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-6 bg-card rounded-lg shadow-lg"
-            >
-              <Icon className="w-12 h-12 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">{title}</h3>
-              <p className="text-muted-foreground">{description}</p>
-            </motion.div>
-          ))}
-        </motion.section>
-
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mb-12"
-        >
-          <h2 className="text-3xl font-bold mb-4">Latest Projects</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              { title: 'Secure Chat App', description: 'End-to-end encrypted messaging application built with React and Node.js.' },
-              { title: 'IoT Home Automation', description: 'Smart home system integrating various sensors and actuators using Raspberry Pi.' },
-              { title: 'Blockchain Voting System', description: 'Decentralized voting platform ensuring transparency and security in elections.' },
-              { title: 'AI-powered Drone', description: 'Autonomous drone with computer vision capabilities for search and rescue operations.' }
-            ].map((project, index) => (
-              <motion.div 
-                key={project.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                className="bg-card p-6 rounded-lg shadow-md"
-              >
-                <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                <p className="text-muted-foreground">{project.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="mb-12"
-        >
-          <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
-          <div className="flex flex-wrap gap-4 mb-4">
-            <Button variant="outline" asChild>
-              <a href="mailto:rynexx@tuta.io" target="_blank" rel="noopener noreferrer">
-                <Mail className="mr-2 h-4 w-4" /> rynexx@tuta.io
-              </a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="https://github.com/rynex" target="_blank" rel="noopener noreferrer">
-                <Github className="mr-2 h-4 w-4" /> rynex
-              </a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="https://linkedin.com/in/rynex" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="mr-2 h-4 w-4" /> rynex
-              </a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="https://t.me/leesiwoo_s" target="_blank" rel="noopener noreferrer">
-                <Send className="mr-2 h-4 w-4" /> leesiwoo_s
-              </a>
-            </Button>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input 
-              placeholder="Your Name" 
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              required
-            />
-            <Input 
-              type="email" 
-              placeholder="Your Email" 
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              required
-            />
-            <Textarea 
-              placeholder="Your Message" 
-              value={formData.message}
-              onChange={(e) => setFormData({...formData, message: e.target.value})}
-              required
-            />
-            <TurnstileWidget onVerify={setTurnstileToken} />
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Sending...' : 'Send Message'}
-            </Button>
-          </form>
-        </motion.section>
+        <Hero />
+        <Skills />
+        <Projects />
+        <Contact handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} loading={loading} setTurnstileToken={setTurnstileToken} />
       </main>
 
       <footer className="text-center p-4 text-muted-foreground">
@@ -205,5 +113,209 @@ export default function Portfolio() {
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+function VisitorCounter({ count }: { count: number }) {
+  return (
+    <div className="flex items-center space-x-2 bg-muted px-3 py-1 rounded-full">
+      <Users className="w-4 h-4" />
+      <span className="text-sm font-medium">{count}</span>
+    </div>
+  )
+}
+
+function Hero() {
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="text-center mb-20 py-20"
+    >
+      <h2 className="text-5xl font-bold mb-6">Ryan Shelby</h2>
+      <h3 className="text-3xl font-semibold mb-4">Web Developer | Hacker | Mechanical Engineer</h3>
+      <p className="text-xl text-muted-foreground mb-8">Bridging the gap between software and hardware</p>
+      <Button size="lg" asChild>
+        <a href="#contact">Get in Touch</a>
+      </Button>
+      <motion.div 
+        animate={{ y: [0, 10, 0] }} 
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="mt-12"
+      >
+        <ChevronDown className="w-8 h-8" />
+      </motion.div>
+    </motion.section>
+  )
+}
+
+function Skills() {
+  const skills = [
+    { name: 'Web Development', icon: Code, level: 90 },
+    { name: 'Cybersecurity', icon: Server, level: 85 },
+    { name: 'Mechanical Engineering', icon: Cpu, level: 80 },
+    { name: 'UI/UX Design', icon: Paintbrush, level: 75 },
+    { name: 'DevOps', icon: GitBranch, level: 70 },
+    { name: 'Machine Learning', icon: Brain, level: 65 },
+    { name: 'Blockchain', icon: Link, level: 60 },
+    { name: 'IoT', icon: Wifi, level: 75 },
+    { name: 'Mobile App Development', icon: Smartphone, level: 70 },
+    { name: 'Data Analysis', icon: BarChart, level: 80 },
+  ]
+
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.4 }}
+      className="mb-20"
+    >
+      <h2 className="text-3xl font-bold mb-8 text-center">Skills</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {skills.map(({ name, icon: Icon, level }, index) => (
+          <motion.div
+            key={name}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Card className="border-2 border-primary/20 hover:border-primary transition-colors duration-300">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Icon className="w-6 h-6 mr-2" />
+                  {name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Progress value={level} className="w-full" />
+                <span className="text-sm text-muted-foreground mt-2">{level}% Proficiency</span>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </motion.section>
+  )
+}
+
+function Projects() {
+  const projects = [
+    { title: 'Secure Chat App', description: 'End-to-end encrypted messaging application built with React and Node.js.' },
+    { title: 'IoT Home Automation', description: 'Smart home system integrating various sensors and actuators using Raspberry Pi.' },
+    { title: 'Blockchain Voting System', description: 'Decentralized voting platform ensuring transparency and security in elections.' },
+    { title: 'AI-powered Drone', description: 'Autonomous drone with computer vision capabilities for search and rescue operations.' }
+  ]
+
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.6 }}
+      className="mb-20"
+    >
+      <h2 className="text-3xl font-bold mb-8 text-center">Latest Projects</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {projects.map((project, index) => (
+          <motion.div 
+            key={project.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 * index }}
+            className="bg-card p-6 rounded-lg shadow-md"
+          >
+            <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+            <p className="text-muted-foreground">{project.description}</p>
+          </motion.div>
+        ))}
+      </div>
+    </motion.section>
+  )
+}
+
+function Contact({ handleSubmit, formData, setFormData, loading, setTurnstileToken }) {
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 1.2 }}
+      className="mb-20"
+      id="contact"
+    >
+      <h2 className="text-3xl font-bold mb-8 text-center">Get in Touch</h2>
+      <div className="flex flex-col md:flex-row gap-8">
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Contact Form</CardTitle>
+            <CardDescription>Send me a message directly</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input 
+                placeholder="Your Name" 
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required
+              />
+              <Input 
+                type="email" 
+                placeholder="Your Email" 
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
+              />
+              <Textarea 
+                placeholder="Your Message" 
+                value={formData.message}
+                onChange={(e) => setFormData({...formData, message: e.target.value})}
+                required
+              />
+              <TurnstileWidget onVerify={setTurnstileToken} />
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Message'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Connect With Me</CardTitle>
+            <CardDescription>Find me on various platforms</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              <SocialLink href="mailto:rynexx@tuta.io" icon={Mail} label="Email" />
+              <SocialLink href="https://github.com/rynex" icon={Github} label="GitHub" />
+              <SocialLink href="https://linkedin.com/in/rynex" icon={Linkedin} label="LinkedIn" />
+              <SocialLink href="https://t.me/leesiwoo_s" icon={Send} label="Telegram" />
+              <SocialLink href="https://reddit.com/user/leesiwoo_s" icon={MessageSquare} label="Reddit" />
+              <SocialLink href="https://gitlab.com/rynex" icon={Gitlab} label="GitLab" />
+              <SocialLink href="https://medium.com/@layek" icon={BookOpen} label="Medium" />
+              <SocialLink href="#" icon={Code} label="Portfolio" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </motion.section>
+  )
+}
+
+interface SocialLinkProps {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  className?: string;
+}
+
+function SocialLink({ href, icon: Icon, label, className }: SocialLinkProps) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex flex-col items-center justify-center p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors ${className}`}
+    >
+      <Icon className="w-6 h-6 mb-2" />
+      <span className="text-sm font-medium">{label}</span>
+    </a>
   )
 }
