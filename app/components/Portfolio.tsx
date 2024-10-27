@@ -53,7 +53,21 @@ export default function Portfolio() {
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
   const visitCount = useVisitCounter()
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+
+    // Block left-click function
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+    }
+
+    document.addEventListener('contextmenu', handleContextMenu)
+
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -71,13 +85,16 @@ export default function Portfolio() {
       setNotification({ type: 'error', message: 'Failed to send message. Please try again.' })
     }
     setLoading(false)
-    setTimeout(() => setNotification(null), 2500)
+    setTimeout(() => setNotification(null), 1500)
   }
 
   if (!mounted) return null
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div 
+      className="min-h-screen bg-background text-foreground transition-colors duration-300"
+      style={{ userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none' }}
+    >
       <nav className="p-4 flex justify-between items-center sticky top-0 bg-background z-10">
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
@@ -138,7 +155,7 @@ function Hero() {
       className="text-center mb-20 py-20"
     >
       <h2 className="text-5xl font-bold mb-6">Ryan Shelby</h2>
-      <h3 className="text-3xl font-semibold mb-4">Web Developer | Ethical Hacker | Mechanical Engineer</h3>
+      <h3 className="text-3xl font-semibold mb-4">Web Developer | Hacker | Mechanical Engineer</h3>
       <p className="text-xl text-muted-foreground mb-8">Bridging the gap between software and hardware</p>
       <Button size="lg" asChild>
         <a href="#contact">Get in Touch</a>
@@ -159,10 +176,10 @@ function Skills() {
     { name: 'Web Development', icon: Code, level: 90 },
     { name: 'Cybersecurity', icon: Server, level: 85 },
     { name: 'Mechanical Engineering', icon: Cpu, level: 80 },
-    { name: 'UI/UX Design', icon: Paintbrush, level: 80 },
+    { name: 'UI/UX Design', icon: Paintbrush, level: 75 },
     { name: 'DevOps', icon: GitBranch, level: 70 },
     { name: 'Machine Learning', icon: Brain, level: 65 },
-    { name: 'Blockchain', icon: Link, level: 70 },
+    { name: 'Blockchain', icon: Link, level: 60 },
     { name: 'IoT', icon: Wifi, level: 75 },
     { name: 'Mobile App Development', icon: Smartphone, level: 70 },
     { name: 'Data Analysis', icon: BarChart, level: 80 },
@@ -241,7 +258,23 @@ function Projects() {
   )
 }
 
-function Contact({ handleSubmit, formData, setFormData, loading, setTurnstileToken }) {
+interface ContactProps {
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+  formData: {
+    name: string;
+    email: string;
+    message: string;
+  };
+  setFormData: React.Dispatch<React.SetStateAction<{
+    name: string;
+    email: string;
+    message: string;
+  }>>;
+  loading: boolean;
+  setTurnstileToken: (token: string | null) => void;
+}
+
+function Contact({ handleSubmit, formData, setFormData, loading, setTurnstileToken }: ContactProps) {
   return (
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
@@ -293,7 +326,7 @@ function Contact({ handleSubmit, formData, setFormData, loading, setTurnstileTok
           <CardContent>
             <div className="grid grid-cols-3 gap-4">
               <SocialLink href="mailto:rynexx@tuta.io" icon={Mail} label="Email" />
-              <SocialLink href="https://github.com/rynex" icon={Github} label="GitHub" />
+              <SocialLink href="https://github.com/MdSagorMunshi" icon={Github} label="GitHub" />
               <SocialLink href="https://linkedin.com/in/rynex" icon={Linkedin} label="LinkedIn" />
               <SocialLink href="https://t.me/leesiwoo_s" icon={Send} label="Telegram" />
               <SocialLink href="https://reddit.com/user/leesiwoo_s" icon={MessageSquare} label="Reddit" />
@@ -315,7 +348,7 @@ interface SocialLinkProps {
   className?: string;
 }
 
-function SocialLink({ href, icon: Icon, label, className }: SocialLinkProps) {
+function SocialLink({ href, icon: Icon, label, className }:  SocialLinkProps) {
   return (
     <a
       href={href}
