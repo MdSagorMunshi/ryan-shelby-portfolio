@@ -120,7 +120,7 @@ export default function Portfolio() {
       </main>
 
       <footer className="text-center p-4 text-muted-foreground">
-        © 2023 Ryan Shelby. All rights reserved.
+        © 2024 Ryan Shelby. All rights reserved.
       </footer>
 
       <AnimatePresence>
