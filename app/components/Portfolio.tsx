@@ -15,21 +15,34 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card"
 import { Progress } from "../components/ui/progress"
 
-// Simulating a real-time visitor counter with WebSocket
-const useVisitorCounter = () => {
+const useVisitCounter = () => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    // Simulating WebSocket connection
-    const interval = setInterval(() => {
-      setCount(prevCount => prevCount + Math.floor(Math.random() * 3));
-    }, 5000);
+    const fetchVisitCount = async () => {
+      try {
+        const response = await fetch('/api/visit-count', { method: 'POST' });
+        const data = await response.json();
+        setCount(data.count);
+      } catch (error) {
+        console.error('Failed to fetch visit count:', error);
+      }
+    };
 
-    return () => clearInterval(interval);
+    fetchVisitCount();
   }, []);
 
   return count;
 };
+
+function VisitCounter({ count }: { count: number }) {
+  return (
+    <div className="flex items-center space-x-2 bg-muted px-3 py-1 rounded-full">
+      <Users className="w-4 h-4" />
+      <span className="text-sm font-medium">{count} visits</span>
+    </div>
+  )
+}
 
 export default function Portfolio() {
   const { theme, setTheme } = useTheme()
@@ -38,7 +51,7 @@ export default function Portfolio() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
-  const visitorCount = useVisitorCounter()
+  const visitCount = useVisitCounter()
 
   useEffect(() => setMounted(true), [])
 
@@ -58,7 +71,7 @@ export default function Portfolio() {
       setNotification({ type: 'error', message: 'Failed to send message. Please try again.' })
     }
     setLoading(false)
-    setTimeout(() => setNotification(null), 1500)
+    setTimeout(() => setNotification(null), 2500)
   }
 
   if (!mounted) return null
@@ -76,7 +89,7 @@ export default function Portfolio() {
           Ryan Shelby
         </motion.h1>
         <div className="flex items-center space-x-4">
-          <VisitorCounter count={visitorCount} />
+          <VisitCounter count={visitCount} />
           <Switch checked={theme === 'dark'} onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
           {theme === 'light' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </div>
@@ -116,15 +129,6 @@ export default function Portfolio() {
   )
 }
 
-function VisitorCounter({ count }: { count: number }) {
-  return (
-    <div className="flex items-center space-x-2 bg-muted px-3 py-1 rounded-full">
-      <Users className="w-4 h-4" />
-      <span className="text-sm font-medium">{count}</span>
-    </div>
-  )
-}
-
 function Hero() {
   return (
     <motion.section 
@@ -134,7 +138,7 @@ function Hero() {
       className="text-center mb-20 py-20"
     >
       <h2 className="text-5xl font-bold mb-6">Ryan Shelby</h2>
-      <h3 className="text-3xl font-semibold mb-4">Web Developer | Hacker | Mechanical Engineer</h3>
+      <h3 className="text-3xl font-semibold mb-4">Web Developer | Ethical Hacker | Mechanical Engineer</h3>
       <p className="text-xl text-muted-foreground mb-8">Bridging the gap between software and hardware</p>
       <Button size="lg" asChild>
         <a href="#contact">Get in Touch</a>
@@ -155,10 +159,10 @@ function Skills() {
     { name: 'Web Development', icon: Code, level: 90 },
     { name: 'Cybersecurity', icon: Server, level: 85 },
     { name: 'Mechanical Engineering', icon: Cpu, level: 80 },
-    { name: 'UI/UX Design', icon: Paintbrush, level: 75 },
+    { name: 'UI/UX Design', icon: Paintbrush, level: 80 },
     { name: 'DevOps', icon: GitBranch, level: 70 },
     { name: 'Machine Learning', icon: Brain, level: 65 },
-    { name: 'Blockchain', icon: Link, level: 60 },
+    { name: 'Blockchain', icon: Link, level: 70 },
     { name: 'IoT', icon: Wifi, level: 75 },
     { name: 'Mobile App Development', icon: Smartphone, level: 70 },
     { name: 'Data Analysis', icon: BarChart, level: 80 },
@@ -221,10 +225,15 @@ function Projects() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 * index }}
-            className="bg-card p-6 rounded-lg shadow-md"
           >
-            <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-            <p className="text-muted-foreground">{project.description}</p>
+            <Card className="border-2 border-secondary/20 hover:border-secondary transition-colors duration-300">
+              <CardHeader>
+                <CardTitle>{project.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{project.description}</p>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>

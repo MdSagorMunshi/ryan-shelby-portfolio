@@ -51,7 +51,7 @@ export async function sendEmail(data: EmailData) {
       } catch (error) {
         reject(error)
       }
-    }, 2000) // 2-second delay
+    }, 100) // 2-second delay
   })
 
   return { success: true }
